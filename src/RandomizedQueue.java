@@ -17,6 +17,14 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         size = 0;
     }
 
+    public void resize(int newSize){
+        Item[] newItems = (Item[]) new Object[newSize];
+        for (int i = 0; i < size; i++){
+            newItems[i] = items[i];
+        }
+        items = newItems;
+    }
+
     /** Return whether the randomized queue is empty. */
     public boolean isEmpty() {
         // TODO: Report whether this array-backed queue contains no items.
@@ -36,11 +44,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
             throw new IllegalArgumentException();
         else {
             if (size >= items.length){
-                Item[] items1 = (Item[]) new Object[size*2];
-                for (int i = 0; i < items1.length; i++){
-                    items1[i] = items[i];
-                }
-                items = items1;
+                resize(2*size);
             }
             items[size] = item;
             size++;
@@ -51,18 +55,14 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
     public Item dequeue() {
         // TODO: Pick a random index between 0 and size-1; swap the chosen item with the last item, then remove and resize as needed.
         if (isEmpty())
-            return null;
+            throw new NoSuchElementException();
         else {
-            if (size <= items.length/4){
-                Item[] items1 = (Item[]) new Object[size/2];
-                for (int i = 0; i < size; i++){
-                    items1[i] = items[i];
-                }
-                items = items1;
-            }
-            int key = (int) (Math.random() * size);
+            int key = (int) Math.floor(Math.random()*(size-1));
             Item removed = items[key];
-            items[key] = items[size];
+            items[key] = items[size-1];
+            if (size <= items.length/4){
+                resize(items.length/2);
+            }
             size--;
             return removed;
         }
@@ -73,7 +73,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         // TODO: Pick a random index between 0 and size-1 and return that array item without removing it.
         if (isEmpty())
             throw new NoSuchElementException();
-        int key = (int)(Math.random()*size);
+        int key = (int) Math.floor(Math.random()*(size-1));
         Item sample = items[key];
         return sample;
     }
